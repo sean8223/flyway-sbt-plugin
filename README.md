@@ -11,9 +11,9 @@ Quick Start
 
 1. Add flyway-sbt-plugin to your `project/plugins.sbt`:
 
-    resolvers += "sean8223 Releases" at "https://github.com/sean8223/repository/raw/master/releases"
+       resolvers += "sean8223 Releases" at "https://github.com/sean8223/repository/raw/master/releases"
 
-    addSbtPlugin("sean8223" %% "flyway-sbt-plugin" % PLUGIN_VERSION) // see above
+       addSbtPlugin("sean8223" %% "flyway-sbt-plugin" % PLUGIN_VERSION) // see above
 
 2. In your `build.sbt`, do the following:
  
