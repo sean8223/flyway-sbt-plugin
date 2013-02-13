@@ -1,9 +1,9 @@
 This is a SBT plugin that provides an interface to the Flyway database
 migration tool (<http://flywaydb.org>). The plugin is entirely self-contained
 and does not require previous installation of Flyway to operate. It is
-compatible with SBT 0.11.3+ and Scala 2.9.1+
+compatible with SBT 0.11.3 and Scala 2.9.1+
 
-The current version of the plugin is *1.0-SNAPSHOT*.
+The current version of the plugin is *1.0*.
 
 
 Quick Start
@@ -11,7 +11,9 @@ Quick Start
 
 1. Add flyway-sbt-plugin to your `project/plugins.sbt`:
 
-   `addSbtPlugin("sean8223" %% "flyway-sbt-plugin" % PLUGIN_VERSION) // see above`
+    resolvers += "sean8223 Releases" at "https://github.com/sean8223/repository/raw/master/releases"
+
+    addSbtPlugin("sean8223" %% "flyway-sbt-plugin" % PLUGIN_VERSION) // see above
 
 2. In your `build.sbt`, do the following:
  
@@ -30,7 +32,7 @@ Quick Start
                                "user" -> "root"
                                ...) 
 						 
-3. Test your configuration by running flyway:info from the SBT prompt.
+3. Test your configuration by running `flyway:info` from the SBT prompt.
 	
 
 Settings
