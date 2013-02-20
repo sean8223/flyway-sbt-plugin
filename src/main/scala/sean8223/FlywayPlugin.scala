@@ -43,11 +43,11 @@ object FlywayPlugin extends Plugin {
 
   // setting keys
 
-  val flywayVersion = SettingKey[String]("version", "The version of Flyway to use")
+  val flywayMigrationDirectories = SettingKey[Seq[File]]("flyway-migration-directories", "Directory roots containing migrations (both SQL- and Java-based).")
 
-  val migrationDirectories = SettingKey[Seq[File]]("migration-directories", "Directory roots containing migrations (both SQL- and Java-based).")
+  val flywayOptions = SettingKey[Map[String, Any]]("flyway-options", "Flyway options.")
 
-  val options = SettingKey[Map[String, Any]]("options", "Flyway options.")
+  val flywayVersion = SettingKey[String]("flyway-version", "Flyway version.")
 
   // exported keys
 
@@ -59,21 +59,11 @@ object FlywayPlugin extends Plugin {
       }
     },
 
-    migrationDirectories <<= (resourceDirectory in Compile, classDirectory in Compile) apply {
-      (rd, cd) => {
-	Seq(rd, cd)
-      }
-    },
-
-    flywayVersion := "2.0.3",
-
-    options := Map(),
-
     clean <<= (streams,
 	       baseDirectory,
 	       managedClasspath in Flyway,
-	       migrationDirectories in Flyway,
-	       options in Flyway) map { 
+	       flywayMigrationDirectories,
+	       flywayOptions) map { 
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "clean")
       } 
@@ -82,8 +72,8 @@ object FlywayPlugin extends Plugin {
     init <<= (streams,
 	      baseDirectory,
 	      managedClasspath in Flyway,
-	      migrationDirectories in Flyway,
-	      options in Flyway) map { 
+	      flywayMigrationDirectories,
+	      flywayOptions) map { 
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "init")
       } 
@@ -92,8 +82,8 @@ object FlywayPlugin extends Plugin {
     migrate <<= (streams,
 		 baseDirectory,
 		 managedClasspath in Flyway,
-		 migrationDirectories in Flyway,
-		 options in Flyway) map { 
+		 flywayMigrationDirectories,
+		 flywayOptions) map { 
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "migrate")
       } 
@@ -102,8 +92,8 @@ object FlywayPlugin extends Plugin {
     validate <<= (streams,
 		  baseDirectory,
 		  managedClasspath in Flyway,
-		  migrationDirectories in Flyway,
-		  options in Flyway) map { 
+		  flywayMigrationDirectories,
+		  flywayOptions) map { 
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "validate")
       }
@@ -112,8 +102,8 @@ object FlywayPlugin extends Plugin {
     info <<= (streams,
 	      baseDirectory,
 	      managedClasspath in Flyway,
-	      migrationDirectories in Flyway,
-	      options in Flyway) map { 
+	      flywayMigrationDirectories,
+	      flywayOptions) map { 
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "info")
       } 
@@ -122,8 +112,8 @@ object FlywayPlugin extends Plugin {
     repair <<= (streams,
 		baseDirectory,
 		managedClasspath in Flyway,
-		migrationDirectories in Flyway,
-		options in Flyway) map { 
+		flywayMigrationDirectories,
+		flywayOptions) map { 
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "repair")
       }
@@ -132,7 +122,17 @@ object FlywayPlugin extends Plugin {
 
   )) ++ Seq(
 
-    libraryDependencies <++= (scalaVersion, flywayVersion in Flyway) apply {
+    flywayMigrationDirectories <<= (resourceDirectory in Compile, classDirectory in Compile) apply {
+      (rd, cd) => {
+	Seq(rd, cd)
+      }
+    },
+
+    flywayVersion := "2.0.3",
+
+    flywayOptions := Map(),
+
+    libraryDependencies <++= (scalaVersion, flywayVersion) apply {
       (sv, fv) => { 
 	Seq("org.scala-lang" % "scala-library" % sv % Flyway.name,
 	    "com.googlecode.flyway" % "flyway-commandline" % fv % Flyway.name,
@@ -177,7 +177,7 @@ object FlywayPlugin extends Plugin {
     val rc = Process(cmdLine, baseDirectory) ! log
     rc match {
       case 0 => ;
-      case _ => error("Failed!")
+      case x => error("Failed with return code: " + x)
     }
   }
 
