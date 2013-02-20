@@ -1,6 +1,6 @@
 sbtPlugin := true
 
-version := "1.1"
+version := "1.2-SNAPSHOT"
 
 organization := "sean8223"
 
