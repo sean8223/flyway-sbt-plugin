@@ -55,7 +55,13 @@ object FlywayPlugin extends Plugin {
 
     managedClasspath <<= (classpathTypes, update) map { 
       (ct, u) => {
-	Classpaths.managedJars(Flyway, ct, u)
+	// java migrations require all reachable classes to 
+	// be on flyway's classpath, or else the scanner
+	// will fail with ClassNotFoundExceptions
+	Classpaths.managedJars(Compile, ct, u) ++ 
+	Classpaths.managedJars(Runtime, ct, u) ++ 
+	Classpaths.managedJars(Provided, ct, u) ++
+	Classpaths.managedJars(Flyway, ct, u) 
       }
     },
 
@@ -87,7 +93,7 @@ object FlywayPlugin extends Plugin {
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "migrate")
       } 
-    } dependsOn(compile in Compile),
+    },
 
     validate <<= (streams,
 		  baseDirectory,
@@ -97,7 +103,7 @@ object FlywayPlugin extends Plugin {
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "validate")
       }
-    } dependsOn(compile in Compile),
+    },
 
     info <<= (streams,
 	      baseDirectory,
@@ -107,7 +113,7 @@ object FlywayPlugin extends Plugin {
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "info")
       } 
-    } dependsOn(compile in Compile),
+    },
 
     repair <<= (streams,
 		baseDirectory,
@@ -117,7 +123,7 @@ object FlywayPlugin extends Plugin {
       (s, bd, mcp, md, o) => {
 	executeFlyway(s.log, bd, mcp, md, o, "repair")
       }
-    } dependsOn(compile in Compile)
+    }
     
 
   )) ++ Seq(
