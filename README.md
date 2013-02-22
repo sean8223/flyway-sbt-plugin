@@ -83,3 +83,4 @@ History
 
 * 1.0: Initial release
 * 1.1: Changed name of setting keys to avoid namespace conflicts
+* 1.2: Removed dependencies on compile, added additional classpaths to flyway to prevent ClassNotFoundExceptions when searching for Java migrations
