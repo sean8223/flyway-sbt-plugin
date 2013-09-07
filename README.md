@@ -3,7 +3,7 @@ migration tool (<http://flywaydb.org>). The plugin is entirely self-contained
 and does not require previous installation of Flyway to operate. It is
 compatible with SBT 0.11.3+ and Scala 2.9.1+
 
-The current version of the plugin is *1.1*.
+The current version of the plugin is *1.2*.
 
 
 Quick Start
